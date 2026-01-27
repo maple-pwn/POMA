@@ -1,0 +1,108 @@
+{
+  "phase_0": {
+    "architecture": "amd64",
+    "protections": {
+      "relro": "partial",
+      "canary": false,
+      "nx": true,
+      "pie": false,
+      "fortify": false,
+      "aslr": true,
+      "seccomp": false
+    },
+    "program_functions": [
+      {
+        "name": "main",
+        "description": "Program entry point, displays menu and calls vuln()"
+      },
+      {
+        "name": "vuln",
+        "description": "Reads user input into a 64-byte stack buffer using gets()"
+      },
+      {
+        "name": "win",
+        "description": "Backdoor function that executes system(\"/bin/sh\")"
+      }
+    ],
+    "key_observations": [
+      "win() function exists at fixed address (no PIE)",
+      "vuln() uses gets() for user input",
+      "No stack canary protection",
+      "64-byte buffer on stack"
+    ],
+    "libc_info": null,
+    "environment_notes": "Standard x86-64 Linux environment"
+  },
+  "phase_1": {
+    "vulnerability": {
+      "type": "stack_buffer_overflow",
+      "subtype": "ret2text",
+      "cwe": "CWE-121"
+    },
+    "location": {
+      "function": "vuln",
+      "line": 15,
+      "instruction": "call gets@plt",
+      "variable": "buf[64]"
+    },
+    "root_cause": {
+      "description": "The gets() function reads user input without any bounds checking, allowing unlimited input to overflow the 64-byte stack buffer",
+      "unsafe_function": "gets",
+      "buffer_size": 64
+    },
+    "trigger_condition": {
+      "description": "Provide input longer than 64 bytes to overflow the buffer and overwrite the saved return address",
+      "minimum_input_length": 73,
+      "constraints": []
+    }
+  },
+  "phase_2": {
+    "primitives": [
+      {
+        "type": "control_flow_hijack",
+        "description": "Can overwrite return address to redirect execution",
+        "constraints": ["Must know target address", "No ASLR bypass needed due to no PIE"]
+      }
+    ],
+    "protection_bypass": {
+      "nx": "Not needed - jumping to existing code, not shellcode",
+      "partial_relro": "Not relevant for this attack path",
+      "no_pie": "Addresses are fixed, win() address is constant"
+    },
+    "exploitation_path": [
+      "1. Calculate offset from buffer start to saved return address (64 bytes buffer + 8 bytes saved RBP = 72 bytes)",
+      "2. Find address of win() function",
+      "3. Construct payload: 72 bytes padding + win() address",
+      "4. Send payload to overflow buffer and overwrite return address",
+      "5. When vuln() returns, execution jumps to win() -> shell"
+    ],
+    "technique": {
+      "name": "ret2text",
+      "reason": "Simplest approach: backdoor function exists, no PIE means fixed addresses, no need for ROP chains or libc leaks"
+    },
+    "alternative_techniques": [
+      {
+        "name": "ret2libc",
+        "applicable": true,
+        "reason": "Could work but unnecessary complexity when win() exists"
+      }
+    ]
+  },
+  "phase_3": {
+    "reference_exploit_path": "exploit.py",
+    "key_offsets": {
+      "buffer_to_rbp": 64,
+      "buffer_to_ret": 72
+    },
+    "key_addresses": {
+      "win": "0x401196"
+    },
+    "payload_structure": "[72 bytes padding][win address in little endian]",
+    "critical_interactions": [
+      "Wait for 'Input: ' prompt",
+      "Send payload",
+      "Interact with shell"
+    ],
+    "expected_output_pattern": "\\$|#|flag\\{.*\\}"
+  }
+}

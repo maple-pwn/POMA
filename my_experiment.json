@@ -1,0 +1,15 @@
+{
+  "name": "我的第一个实验",
+  "models": [
+    {
+      "provider": "openrouter",
+      "model_name": "openai/o4-mini",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "temperature": 0.0,
+      "max_tokens": 4096
+    }
+  ],
+  "ablation_conditions": ["full_pipeline"],
+  "max_iterations": 10,
+  "output_dir": "results"
+}

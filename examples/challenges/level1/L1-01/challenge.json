@@ -1,0 +1,19 @@
+{
+  "challenge_id": "L1-01",
+  "name": "ret2win_basic",
+  "level": 1,
+  "vulnerability_types": ["stack_buffer_overflow"],
+  "exploit_techniques": ["ret2text"],
+  "source": "Example",
+  "binary_path": "challenge",
+  "source_path": "challenge.c",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": null,
+  "description": "A basic ret2win challenge with a buffer overflow and a win function",
+  "hints": [
+    "Look for unsafe input functions",
+    "There's a function that gives you a shell"
+  ],
+  "tags": ["beginner", "stack", "ret2text"]
+}
