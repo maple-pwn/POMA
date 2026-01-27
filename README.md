@@ -1,6 +1,6 @@
 # POMA - Pwn-Oriented Model Assessment Framework
 
-A fine-grained evaluation framework for assessing LLM capabilities in CTF Pwn vulnerability analysis and exploitation.
+A fine-grained evaluation framework for assessing LLM capabilities in CTF Pwn vulnerability analysis and exploitation.If you want more, please read [docs](docs/)
 
 ## Overview
 

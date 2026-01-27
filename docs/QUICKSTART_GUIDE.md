@@ -1,9 +1,5 @@
 # POMA 快速上手指南
 
-**适用人群**：第一次使用POMA的新手，无需理解底层原理。
-
----
-
 ## 📋 准备工作（5分钟）
 
 ### 第1步：安装依赖
@@ -14,8 +10,6 @@
 cd /path/to/POMA
 pip install -e .
 ```
-
-> 💡 **说明**：这会自动安装所有需要的Python包。
 
 ### 第2步：设置API密钥
 
@@ -35,8 +29,6 @@ export DEEPSEEK_API_KEY="你的API密钥"
 export DASHSCOPE_API_KEY="你的API密钥"
 ```
 
-> 💡 **提示**：可以把上面的命令加到 `~/.bashrc` 或 `~/.zshrc` 中，这样每次打开终端都会自动设置。
-
 ### 第3步：验证安装
 
 ```bash
@@ -47,7 +39,7 @@ poma --help
 
 ---
 
-## 🎯 场景一：运行你的第一个实验（最简单）
+## 🎯 场景一：测试
 
 ### 准备题目文件
 
@@ -87,15 +79,13 @@ challenges/
 
 > 💡 **快速修改**：
 > - 如果用Claude，把 `"provider"` 改成 `"anthropic"`，`"model_name"` 改成 `"claude-3-5-sonnet-20241022"`
-> - `"max_iterations"` 是调试轮数，越大越有可能成功，但也更耗时
+> - `"max_iterations"` 是调试轮数
 
 ### 运行实验
 
 ```bash
 poma run --config my_experiment.json --challenges-dir challenges/
 ```
-
-> ⏱ **预计时间**：每个题目约5-15分钟（取决于模型速度和题目难度）
 
 ### 查看结果
 
@@ -254,7 +244,6 @@ challenges/level2/L2-05/
 }
 ```
 
-> 💡 **注意**：Ground Truth 要尽可能详细准确，这是评分的标准。
 
 ---
 
@@ -315,7 +304,7 @@ Total: 15 challenges
 
 ---
 
-## ⚙️ 场景六：自定义配置（高级）
+## ⚙️ 场景六：自定义配置
 
 ### 修改默认配置
 
@@ -380,72 +369,6 @@ poma analyze --results-dir results/ --validate-hypotheses
 
 ---
 
-## 🛠️ 常见问题
-
-### Q1: 运行时报错 `API key not found`
-
-**解决**：检查环境变量是否设置正确：
-
-```bash
-echo $OPENAI_API_KEY   # 应该显示你的API密钥
-```
-
-如果为空，重新 export：
-
-```bash
-export OPENAI_API_KEY="你的密钥"
-```
-
-### Q2: 实验卡住不动
-
-**可能原因**：
-1. LLM API 响应慢（正常，耐心等待）
-2. 网络问题（检查网络连接）
-3. Docker启动慢（第一次需要构建镜像）
-
-**查看进度**：观察终端输出，应该有类似这样的提示：
-
-```
-Running experiments with model: gpt-4o
-Starting Docker container for L1-01...
-Container started at localhost:10000
-```
-
-### Q3: Exploit 一直失败
-
-**可能原因**：
-1. Ground Truth 不准确（检查 phase_3 的关键偏移量和地址）
-2. 题目太难（增加 `max_iterations`）
-3. 远程环境配置问题（检查 Docker 容器是否正常运行）
-
-**调试方法**：
-1. 查看结果 JSON 中的 `iterations` 字段，看每轮的错误信息
-2. 手动运行生成的 exploit.py 验证
-
-### Q4: 如何只测试单个题目？
-
-在 `my_experiment.json` 中添加 `challenge_ids`：
-
-```json
-{
-  "challenge_ids": ["L1-01"],
-  "models": [...],
-  ...
-}
-```
-
-### Q5: 报告中的假设验证是什么意思？
-
-POMA 验证5个研究假设（H1-H5），例如：
-- **H1**: 阶段间能力递减（Phase 0 > Phase 1 > Phase 2 > Phase 3）
-- **H3**: 数值计算是主要瓶颈
-- **H4**: 难度-能力非线性关系（断崖效应）
-
-查看 `analysis_report.json` 中的 `hypothesis_validation` 部分，每个假设会显示：
-- `hypothesis_supported`: true/false（是否支持）
-- 相关数据和说明
-
----
 
 ## 📚 快速命令参考
 
@@ -483,6 +406,3 @@ poma --config-file <custom.yaml> run ...
 3. **添加新的LLM提供商**：参考 `poma/llm/providers.py`
 4. **修改提示词模板**：编辑 `poma/prompts/templates.py`
 
----
-
-**🎉 恭喜！你已经学会了 POMA 的基本使用。开始你的评估实验吧！**
