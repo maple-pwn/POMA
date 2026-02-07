@@ -1,8 +1,30 @@
 """
-POMA - Pwn-Oriented Model Assessment Framework
-Core Data Models and Schemas
+POMA 核心数据模型与评分体系定义
 
-This module defines all data structures used throughout the evaluation framework.
+本模块定义了评估框架中使用的所有数据结构，包括：
+
+1. 枚举类型：
+   - PhaseType: 四阶段评估流程（信息收集→漏洞分析→策略规划→Exploit生成）
+   - VulnerabilityType: 支持的漏洞类型（栈溢出、堆溢出、格式化字符串等）
+   - ExploitTechnique: 利用技术（ret2text、ROP、House of X等）
+   - DifficultyLevel: 题目难度等级（Level 1-6）
+   - ExploitGrade: Exploit质量等级（A-F）
+   - AblationCondition: 消融实验条件（A-E，逐步注入Ground Truth）
+
+2. 评分模型（对应论文4.2节评分体系）：
+   - Phase0Score: 信息收集评分（满分12分）
+   - Phase1Score: 漏洞分析评分（满分12分）
+   - Phase2Score: 策略规划评分（满分12分）
+   - Phase3Score: Exploit生成评分（满分15分，含框架/数值/载荷三个子维度）
+   - EvaluationScores: 四阶段总评分（满分51分）
+
+3. 数据模型：
+   - Challenge: CTF Pwn题目元数据
+   - ChallengeGroundTruth: 四阶段标准答案
+   - PhaseResult: 单阶段评估结果
+   - IterationRecord: Phase 3调试迭代记录
+   - ExperimentResult: 完整实验结果
+   - ModelConfig / ExperimentConfig: 模型和实验配置
 """
 
 from dataclasses import dataclass, field
@@ -13,53 +35,74 @@ import uuid
 
 
 class PhaseType(Enum):
-    """Evaluation phases in the Pwn exploitation pipeline."""
+    """Pwn漏洞利用流水线的评估阶段
 
-    PHASE_0 = "information_gathering"  # Info collection & environment sensing
-    PHASE_1 = "vulnerability_analysis"  # Vulnerability identification & root cause
-    PHASE_2 = "strategy_planning"  # Exploitation strategy planning
-    PHASE_3 = "exploit_generation"  # Exploit generation & iterative debugging
+    对应论文中的四阶段评估模型，每个阶段考察LLM的不同能力维度。
+    """
+
+    PHASE_0 = "information_gathering"  # 阶段0：信息收集与环境感知
+    PHASE_1 = "vulnerability_analysis"  # 阶段1：漏洞识别与根因分析
+    PHASE_2 = "strategy_planning"  # 阶段2：利用策略规划
+    PHASE_3 = "exploit_generation"  # 阶段3：Exploit生成与迭代调试
 
 
 class VulnerabilityType(Enum):
-    """Supported vulnerability types."""
+    """支持的漏洞类型枚举
 
-    STACK_BUFFER_OVERFLOW = "stack_buffer_overflow"
-    HEAP_OVERFLOW = "heap_overflow"
-    FORMAT_STRING = "format_string"
-    USE_AFTER_FREE = "use_after_free"
-    DOUBLE_FREE = "double_free"
-    INTEGER_OVERFLOW = "integer_overflow"
-    TYPE_CONFUSION = "type_confusion"
-    RACE_CONDITION = "race_condition"
-    UNINITIALIZED_MEMORY = "uninitialized_memory"
-    OUT_OF_BOUNDS = "out_of_bounds"
-    OTHER = "other"
+    涵盖CTF Pwn题目中常见的内存安全漏洞类型，
+    用于题目分类和H2假设验证（教科书式 vs 变体/组合漏洞）。
+    """
+
+    STACK_BUFFER_OVERFLOW = "stack_buffer_overflow"  # 栈缓冲区溢出
+    HEAP_OVERFLOW = "heap_overflow"                  # 堆溢出
+    FORMAT_STRING = "format_string"                  # 格式化字符串漏洞
+    USE_AFTER_FREE = "use_after_free"                # 释放后使用（UAF）
+    DOUBLE_FREE = "double_free"                      # 双重释放
+    INTEGER_OVERFLOW = "integer_overflow"             # 整数溢出
+    TYPE_CONFUSION = "type_confusion"                # 类型混淆
+    RACE_CONDITION = "race_condition"                 # 竞态条件
+    UNINITIALIZED_MEMORY = "uninitialized_memory"    # 未初始化内存
+    OUT_OF_BOUNDS = "out_of_bounds"                  # 越界访问
+    OTHER = "other"                                  # 其他类型
 
 
 class ExploitTechnique(Enum):
-    """Common exploitation techniques."""
+    """常见利用技术枚举
 
-    RET2TEXT = "ret2text"
-    RET2SHELLCODE = "ret2shellcode"
-    RET2LIBC = "ret2libc"
-    ROP = "rop"
-    RET2CSU = "ret2csu"
-    SROP = "srop"
-    STACK_PIVOT = "stack_pivot"
-    GOT_OVERWRITE = "got_overwrite"
-    TCACHE_POISONING = "tcache_poisoning"
-    FASTBIN_ATTACK = "fastbin_attack"
-    UNSORTED_BIN_ATTACK = "unsorted_bin_attack"
-    HOUSE_OF_FORCE = "house_of_force"
-    HOUSE_OF_SPIRIT = "house_of_spirit"
-    HOUSE_OF_LORE = "house_of_lore"
-    HOUSE_OF_ORANGE = "house_of_orange"
-    HOUSE_OF_EINHERJAR = "house_of_einherjar"
-    LARGEBIN_ATTACK = "largebin_attack"
-    IO_FILE_ATTACK = "io_file_attack"
-    SANDBOX_ESCAPE = "sandbox_escape"
-    OTHER = "other"
+    按难度等级分层组织，与论文表1的难度分级对应：
+    - Level 1-2: 基础/高级栈利用技术
+    - Level 3: 格式化字符串利用技术
+    - Level 4-5: 基础/高级堆利用技术
+    - Level 6: 复杂组合利用技术
+    """
+
+    # 栈利用技术（Level 1-2）
+    RET2TEXT = "ret2text"              # 返回到程序已有函数（如后门函数）
+    RET2SHELLCODE = "ret2shellcode"    # 返回到注入的shellcode
+    RET2LIBC = "ret2libc"             # 返回到libc函数（如system）
+    ROP = "rop"                        # 返回导向编程（gadget链）
+    RET2CSU = "ret2csu"               # 利用__libc_csu_init的通用gadget
+    SROP = "srop"                      # 信号返回导向编程
+    STACK_PIVOT = "stack_pivot"        # 栈迁移（转移栈指针到可控区域）
+
+    # 格式化字符串利用技术（Level 3）
+    GOT_OVERWRITE = "got_overwrite"    # GOT表覆写
+
+    # 堆利用技术（Level 4-5）
+    TCACHE_POISONING = "tcache_poisoning"          # tcache投毒
+    FASTBIN_ATTACK = "fastbin_attack"              # fastbin攻击
+    UNSORTED_BIN_ATTACK = "unsorted_bin_attack"    # unsorted bin攻击
+    HOUSE_OF_FORCE = "house_of_force"              # House of Force
+    HOUSE_OF_SPIRIT = "house_of_spirit"            # House of Spirit
+    HOUSE_OF_LORE = "house_of_lore"                # House of Lore
+    HOUSE_OF_ORANGE = "house_of_orange"            # House of Orange
+    HOUSE_OF_EINHERJAR = "house_of_einherjar"      # House of Einherjar
+    LARGEBIN_ATTACK = "largebin_attack"            # large bin攻击
+
+    # 复杂利用技术（Level 6）
+    IO_FILE_ATTACK = "io_file_attack"  # IO_FILE结构体攻击
+    SANDBOX_ESCAPE = "sandbox_escape"  # 沙箱逃逸
+    OTHER = "other"                    # 其他技术
 
 
 class DifficultyLevel(Enum):
@@ -700,6 +743,7 @@ class ExperimentConfig:
     max_iterations: int = 10
     parallel_workers: int = 1
     output_dir: str = "results"
+    num_runs: int = 1
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -711,4 +755,5 @@ class ExperimentConfig:
             "max_iterations": self.max_iterations,
             "parallel_workers": self.parallel_workers,
             "output_dir": self.output_dir,
+            "num_runs": self.num_runs,
         }

@@ -17,8 +17,11 @@ POMA enables systematic evaluation of Large Language Models across the complete 
 - **Ablation experiments**: Test with ground truth injected at different phases to identify bottlenecks
 - **Multi-model support**: Evaluate OpenAI, Anthropic, DeepSeek, Qwen, and more
 - **Docker integration**: Automated container management for challenge environments
-- **Hypothesis validation**: Built-in analysis to validate research hypotheses
+- **Hypothesis validation**: Built-in analysis to validate research hypotheses (H1-H5)
 - **Detailed metrics**: Track iteration convergence, error patterns, and diagnosis accuracy
+- **Multi-run experiments**: Repeat experiments (`num_runs`) for statistical significance
+- **Resilient API calls**: Exponential backoff retry mechanism for LLM API stability
+- **Test suite**: 29 unit tests covering all core modules
 
 ## Installation
 
@@ -30,6 +33,12 @@ Or with development dependencies:
 
 ```bash
 pip install -e ".[dev]"
+```
+
+## Running Tests
+
+```bash
+pytest tests/ -v
 ```
 
 ## Quick Start
@@ -58,6 +67,7 @@ Create `config.json`:
   ],
   "ablation_conditions": ["full_pipeline"],
   "max_iterations": 10,
+  "num_runs": 1,
   "output_dir": "results"
 }
 ```

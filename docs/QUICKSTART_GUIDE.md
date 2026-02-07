@@ -73,6 +73,7 @@ challenges/
   ],
   "ablation_conditions": ["full_pipeline"],
   "max_iterations": 10,
+  "num_runs": 1,
   "output_dir": "results"
 }
 ```
@@ -80,6 +81,7 @@ challenges/
 > 💡 **快速修改**：
 > - 如果用Claude，把 `"provider"` 改成 `"anthropic"`，`"model_name"` 改成 `"claude-3-5-sonnet-20241022"`
 > - `"max_iterations"` 是调试轮数
+> - `"num_runs"` 是重复实验次数（默认1），用于统计显著性分析
 
 ### 运行实验
 
@@ -94,7 +96,7 @@ poma run --config my_experiment.json --challenges-dir challenges/
 ```
 results/
 ├── gpt-4o/
-│   ├── L1-01_full_pipeline_xxxx.json    # 详细结果
+│   ├── L1-01_full_pipeline_run0_xxxx.json    # 详细结果（run编号）
 │   └── ...
 └── summary.json                          # 总结报告
 ```

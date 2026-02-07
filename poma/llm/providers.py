@@ -1,12 +1,20 @@
 """
 LLM 提供商具体实现
 
+本模块实现了POMA框架支持的所有LLM API提供商，每个提供商继承BaseLLMProvider
+并实现_make_request()方法来对接各自的API格式。
+
 支持的提供商：
-- OpenAI (gpt-4o, gpt-4-turbo等)
-- Anthropic (claude-3-5-sonnet, claude-3-opus等)
-- DeepSeek (deepseek-chat)
-- Qwen (qwen2.5-72b-instruct)
-- OpenRouter (聚合多个模型提供商)
+- OpenAI: gpt-4o, gpt-4-turbo等（标准Chat Completions API）
+- Anthropic: claude-3-5-sonnet, claude-3-opus等（Messages API，需特殊处理system消息）
+- DeepSeek: deepseek-chat（OpenAI兼容格式）
+- Qwen: qwen2.5-72b-instruct（通义千问，OpenAI兼容格式，通过DashScope接入）
+- OpenRouter: API聚合服务，统一接口访问多个提供商的模型
+
+所有提供商的base_url均可通过default.yaml配置文件自定义，
+API密钥通过环境变量注入（不硬编码在代码中）。
+
+工厂函数 create_provider() 根据ModelConfig自动创建对应的提供商实例。
 """
 
 import os
@@ -21,14 +29,29 @@ if TYPE_CHECKING:
 
 
 class OpenAIProvider(BaseLLMProvider):
-    """OpenAI API提供商实现"""
+    """OpenAI API提供商实现
+
+    使用标准的Chat Completions API格式，支持gpt-4o、gpt-4-turbo等模型。
+    API密钥通过Authorization Bearer头传递。
+    """
 
     @property
     def provider_name(self) -> str:
         return "openai"
 
     def _make_request(self, messages: List[Dict[str, str]], **kwargs) -> LLMResponse:
-        """调用OpenAI Chat Completions API"""
+        """调用OpenAI Chat Completions API
+
+        Args:
+            messages: 消息列表，格式为[{"role": "system/user/assistant", "content": "..."}]
+            **kwargs: 可覆盖temperature和max_tokens
+
+        Returns:
+            LLMResponse: 包含生成内容和token统计的响应对象
+
+        Raises:
+            httpx.HTTPStatusError: API请求失败时抛出
+        """
         default_url = config.get(
             "llm.providers.openai.base_url", "https://api.openai.com/v1/chat/completions"
         )
@@ -132,14 +155,26 @@ class AnthropicProvider(BaseLLMProvider):
 
 
 class DeepSeekProvider(BaseLLMProvider):
-    """DeepSeek API提供商实现（OpenAI兼容格式）"""
+    """DeepSeek API提供商实现
+
+    采用OpenAI兼容的Chat Completions API格式。
+    默认API端点为 https://api.deepseek.com/v1/chat/completions
+    """
 
     @property
     def provider_name(self) -> str:
         return "deepseek"
 
     def _make_request(self, messages: List[Dict[str, str]], **kwargs) -> LLMResponse:
-        """调用DeepSeek Chat Completions API"""
+        """调用DeepSeek Chat Completions API
+
+        Args:
+            messages: 消息列表（OpenAI格式）
+            **kwargs: 可覆盖temperature和max_tokens
+
+        Returns:
+            LLMResponse: 包含生成内容和token统计的响应对象
+        """
         default_url = config.get(
             "llm.providers.deepseek.base_url", "https://api.deepseek.com/v1/chat/completions"
         )
@@ -176,14 +211,27 @@ class DeepSeekProvider(BaseLLMProvider):
 
 
 class QwenProvider(BaseLLMProvider):
-    """通义千问API提供商实现（OpenAI兼容格式）"""
+    """通义千问API提供商实现
+
+    采用OpenAI兼容的Chat Completions API格式，通过阿里云DashScope服务接入。
+    默认API端点为 https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+    API密钥环境变量通常为 DASHSCOPE_API_KEY。
+    """
 
     @property
     def provider_name(self) -> str:
         return "qwen"
 
     def _make_request(self, messages: List[Dict[str, str]], **kwargs) -> LLMResponse:
-        """调用通义千问 Chat Completions API"""
+        """调用通义千问 Chat Completions API
+
+        Args:
+            messages: 消息列表（OpenAI格式）
+            **kwargs: 可覆盖temperature和max_tokens
+
+        Returns:
+            LLMResponse: 包含生成内容和token统计的响应对象
+        """
         default_url = config.get(
             "llm.providers.qwen.base_url",
             "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
@@ -232,7 +280,22 @@ class OpenRouterProvider(BaseLLMProvider):
         return "openrouter"
 
     def _make_request(self, messages: List[Dict[str, str]], **kwargs) -> LLMResponse:
-        """调用OpenRouter Chat Completions API"""
+        """调用OpenRouter Chat Completions API
+
+        OpenRouter特殊处理：
+        - 需要额外的HTTP-Referer和X-Title请求头
+        - 错误响应包含详细的诊断信息（余额不足、模型不可用等）
+
+        Args:
+            messages: 消息列表（OpenAI格式）
+            **kwargs: 可覆盖temperature和max_tokens
+
+        Returns:
+            LLMResponse: 包含生成内容和token统计的响应对象
+
+        Raises:
+            ValueError: API返回错误时，附带详细诊断信息
+        """
         default_url = config.get(
             "llm.providers.openrouter.base_url",
             "https://openrouter.ai/api/v1/chat/completions",

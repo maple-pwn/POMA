@@ -1,11 +1,25 @@
 """
 LLM 提供商抽象基类
+
+本模块定义了POMA框架中LLM交互的核心抽象层，包括：
+
+1. LLMResponse: LLM响应数据类，封装API返回的所有信息
+2. BaseLLMProvider: 抽象基类，定义统一的LLM接口规范
+
+设计要点：
+- 所有具体提供商（OpenAI、Anthropic等）继承BaseLLMProvider
+- chat()方法内置指数退避重试机制（2s→4s→8s），提高API调用稳定性
+- complete()是chat()的便捷封装，适用于单轮对话场景
+- 自动计时功能记录每次请求的延迟（latency_ms）
 """
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Dict, Any, List
+import logging
 import time
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -72,21 +86,46 @@ class BaseLLMProvider(ABC):
         """
         pass
 
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> LLMResponse:
+    def chat(
+        self,
+        messages: List[Dict[str, str]],
+        max_retries: int = 3,
+        **kwargs,
+    ) -> LLMResponse:
         """
-        多轮对话接口（自动计时）
+        多轮对话接口（自动计时，含指数退避重试）
 
         Args:
             messages: 消息列表
+            max_retries: 最大重试次数（默认3次）
             **kwargs: 其他可选参数
 
         Returns:
             LLMResponse: LLM响应对象（包含延迟信息）
         """
         start_time = time.time()
-        response = self._make_request(messages, **kwargs)
-        response.latency_ms = int((time.time() - start_time) * 1000)
-        return response
+        last_exception = None
+
+        for attempt in range(max_retries):
+            try:
+                response = self._make_request(messages, **kwargs)
+                response.latency_ms = int((time.time() - start_time) * 1000)
+                return response
+            except Exception as e:
+                last_exception = e
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** (attempt + 1)
+                    logger.warning(
+                        "LLM request failed (attempt %d/%d): %s. "
+                        "Retrying in %ds...",
+                        attempt + 1,
+                        max_retries,
+                        e,
+                        wait_time,
+                    )
+                    time.sleep(wait_time)
+
+        raise last_exception
 
     def complete(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> LLMResponse:
         """
@@ -114,20 +153,3 @@ class BaseLLMProvider(ABC):
         """提供商名称（抽象属性，由子类实现）"""
         pass
 
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> LLMResponse:
-        start_time = time.time()
-        response = self._make_request(messages, **kwargs)
-        response.latency_ms = int((time.time() - start_time) * 1000)
-        return response
-
-    def complete(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> LLMResponse:
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
-        return self.chat(messages, **kwargs)
-
-    @property
-    @abstractmethod
-    def provider_name(self) -> str:
-        pass

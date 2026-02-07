@@ -1,14 +1,30 @@
 """
 POMA 命令行接口
 
+基于 argparse 构建的命令行工具，提供完整的实验管理功能。支持通过 --config-file 参数
+覆盖默认 YAML 配置，与 POMA 所有子系统深度集成：LLM 提供者管理、题目管理器、实验
+评估器、结果分析器。
+
+架构特点：
+- 子命令模式：每个功能独立为一个子命令（run/analyze/list/init）
+- 配置灵活：支持 JSON 实验配置 + YAML 全局配置双层配置体系
+- 模块化集成：通过 ChallengeManager、ExperimentRunner、ResultAnalyzer 等模块协同工作
+- Docker 支持：可选启用 Docker 容器化运行远程题目
+
 提供以下子命令：
-1. run: 运行评估实验（支持多模型、消融实验、Docker）
-2. analyze: 分析实验结果（生成报告、假设验证）
-3. list: 列出可用题目
-4. init: 初始化新题目模板
+1. run: 运行评估实验（支持多模型、消融实验、Docker 容器化）
+2. analyze: 分析实验结果（生成统计报告、假设验证）
+3. list: 列出可用题目（按难度和 ID 排序）
+4. init: 初始化新题目模板（生成完整目录结构）
 
 使用方法：
     poma [--config-file custom.yaml] <command> [options]
+
+示例：
+    poma run --config experiments/exp1.json --use-docker
+    poma analyze --results-dir results/exp1 --validate-hypotheses
+    poma list --challenges-dir challenges
+    poma init L1-01 --output-dir challenges/level1/L1-01 --level 1
 """
 
 import argparse
@@ -31,7 +47,28 @@ from poma.config import config
 
 
 def load_config(config_path: Path) -> ExperimentConfig:
-    """从JSON文件加载实验配置"""
+    """从 JSON 文件加载实验配置
+
+    解析 JSON 配置文件并构建 ExperimentConfig 对象。配置文件定义了完整的实验参数，
+    包括模型列表、题目范围、消融条件、并行度等。支持多模型配置，每个模型可独立
+    设置 API 密钥、温度、超时等参数。
+
+    Args:
+        config_path: JSON 配置文件路径
+
+    Returns:
+        ExperimentConfig: 实验配置对象，包含以下字段：
+            - name: 实验名称
+            - description: 实验描述
+            - models: ModelConfig 列表，每个包含 provider、model_name、api_key_env、
+                     temperature、max_tokens、timeout、base_url 等字段
+            - challenge_ids: 要测试的题目 ID 列表（空则测试全部）
+            - ablation_conditions: 消融实验条件列表（如 full_pipeline、no_decompiled_code）
+            - max_iterations: 每个题目的最大迭代次数
+            - parallel_workers: 并行工作进程数
+            - output_dir: 结果输出目录
+            - num_runs: 每个配置的重复运行次数
+    """
     with open(config_path) as f:
         data = json.load(f)
 
@@ -61,10 +98,33 @@ def load_config(config_path: Path) -> ExperimentConfig:
         max_iterations=data.get("max_iterations", 10),
         parallel_workers=data.get("parallel_workers", 1),
         output_dir=data.get("output_dir", "results"),
+        num_runs=data.get("num_runs", 1),
     )
 
 
 def cmd_run(args):
+    """执行评估实验的完整流程
+
+    这是 POMA 的核心命令，执行完整的实验评估流程。按照以下步骤运行：
+    1. 加载 JSON 实验配置（模型、题目、消融条件等）
+    2. 从指定目录加载题目集合（challenge.json + ground_truth.json）
+    3. 为每个模型创建 LLM 提供者实例
+    4. 可选：启动 Docker 容器化环境（用于远程题目）
+    5. 逐模型运行实验：对每个题目执行指定次数的评估
+    6. 收集所有结果并保存汇总报告（summary.json）
+
+    支持多模型并行评估、消融实验（如移除反编译代码）、多次重复运行以评估稳定性。
+    实验结果按模型分目录保存，包含详细的交互日志、评分、成功率等指标。
+
+    Args:
+        args: 命令行参数对象，包含：
+            - config: 实验配置文件路径（JSON 格式）
+            - challenges_dir: 题目目录路径
+            - use_docker: 是否启用 Docker 容器化
+
+    Returns:
+        int: 退出码，0 表示成功，1 表示失败
+    """
     config = load_config(Path(args.config))
 
     challenge_manager = ChallengeManager(Path(args.challenges_dir))
@@ -124,6 +184,7 @@ def cmd_run(args):
             results = runner.run_full_experiment(
                 challenge_ids=[c.challenge_id for c in challenges],
                 ablation_conditions=config.ablation_conditions,
+                num_runs=config.num_runs,
             )
 
             all_results.extend(results)
@@ -161,6 +222,26 @@ def cmd_run(args):
 
 
 def cmd_analyze(args):
+    """分析实验结果并生成统计报告
+
+    对已完成的实验结果进行深度分析，生成包含成功率、各阶段得分、错误模式等的
+    综合报告。可选启用假设验证功能，对论文中提出的研究假设进行统计检验。
+
+    执行流程：
+    1. 从结果目录加载所有实验数据（ExperimentResult 对象）
+    2. 计算统计指标：总体成功率、各阶段平均分、模型对比等
+    3. 生成 JSON 格式的分析报告（包含图表数据）
+    4. 可选：执行假设验证（如"提供反编译代码能显著提升成功率"）
+
+    Args:
+        args: 命令行参数对象，包含：
+            - results_dir: 实验结果目录路径
+            - output: 输出报告路径（可选，默认为 results_dir/analysis_report.json）
+            - validate_hypotheses: 是否执行假设验证（布尔值）
+
+    Returns:
+        int: 退出码，0 表示成功
+    """
     analyzer = ResultAnalyzer(Path(args.results_dir))
     analyzer.load_results()
 
@@ -182,6 +263,23 @@ def cmd_analyze(args):
 
 
 def cmd_list_challenges(args):
+    """列出所有可用题目并以表格形式展示
+
+    从指定目录加载所有题目，按难度等级和题目 ID 排序后以表格形式输出。
+    表格包含题目 ID、名称、难度等级、漏洞类型等关键信息，便于快速浏览题库。
+
+    输出格式：
+    - 表头：ID（20字符宽）、Name（25字符宽）、Level（8字符宽）、Vuln Types（25字符宽）
+    - 排序：先按难度等级（1-6），再按题目 ID 字母序
+    - 漏洞类型：最多显示前2个类型，超过则显示"..."
+
+    Args:
+        args: 命令行参数对象，包含：
+            - challenges_dir: 题目目录路径
+
+    Returns:
+        int: 退出码，0 表示成功
+    """
     challenge_manager = ChallengeManager(Path(args.challenges_dir))
     challenge_manager.load_challenges()
 
@@ -206,6 +304,32 @@ def cmd_list_challenges(args):
 
 
 def cmd_init_challenge(args):
+    """初始化新题目的完整目录结构和模板文件
+
+    为新题目创建标准化的目录结构，生成所有必需的模板文件。这些模板遵循 POMA
+    的题目规范，包含完整的元数据结构、评估标准、容器化配置等。
+
+    生成的文件：
+    1. challenge.json: 题目元数据（ID、名称、难度、漏洞类型、文件路径等）
+    2. ground_truth.json: 评估标准（四阶段的预期答案和评分依据）
+       - phase_0: 程序理解（架构、保护机制、函数列表）
+       - phase_1: 漏洞识别（类型、位置、根因、触发条件）
+       - phase_2: 利用策略（原语、绕过方法、技术选择）
+       - phase_3: 利用实现（关键偏移、地址、payload 结构）
+    3. Dockerfile: 容器化配置（基于 Ubuntu 22.04 + socat）
+    4. flag.txt: 占位符 flag 文件
+    5. decompiled.c: 反编译代码占位符
+
+    Args:
+        args: 命令行参数对象，包含：
+            - challenge_id: 题目 ID（如 L1-01）
+            - output_dir: 输出目录路径
+            - name: 题目名称（可选，默认使用 challenge_id）
+            - level: 难度等级（1-6，默认为 1）
+
+    Returns:
+        int: 退出码，0 表示成功
+    """
     challenge_dir = Path(args.output_dir)
     challenge_dir.mkdir(parents=True, exist_ok=True)
 
@@ -313,6 +437,33 @@ CMD ["socat", "TCP-LISTEN:9999,reuseaddr,fork", "EXEC:/challenge/challenge"]
 
 
 def main():
+    """POMA 命令行工具的主入口函数
+
+    基于 argparse 构建完整的命令行界面，支持四个主要子命令和全局配置选项。
+    负责解析命令行参数、加载自定义 YAML 配置文件、分发到对应的子命令处理函数。
+
+    命令行结构：
+    - 全局选项：--config-file（可选，用于覆盖默认 YAML 配置）
+    - 子命令：
+      1. run: 运行评估实验
+         - --config/-c: 实验配置文件（JSON，必需）
+         - --challenges-dir/-d: 题目目录（默认 "challenges"）
+         - --use-docker: 启用 Docker 容器化（可选）
+      2. analyze: 分析实验结果
+         - --results-dir/-r: 结果目录（必需）
+         - --output/-o: 输出报告路径（可选）
+         - --validate-hypotheses: 执行假设验证（可选）
+      3. list: 列出可用题目
+         - --challenges-dir/-d: 题目目录（默认 "challenges"）
+      4. init: 初始化新题目
+         - challenge_id: 题目 ID（位置参数，必需）
+         - --output-dir/-o: 输出目录（必需）
+         - --name/-n: 题目名称（可选）
+         - --level/-l: 难度等级 1-6（默认 1）
+
+    Returns:
+        int: 退出码，0 表示成功，1 表示失败或无效命令
+    """
     parser = argparse.ArgumentParser(
         description="POMA - Pwn-Oriented Model Assessment Framework",
         formatter_class=argparse.RawDescriptionHelpFormatter,
