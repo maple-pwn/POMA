@@ -575,3 +575,91 @@ class DockerOrchestrator:
             return result.stdout.strip().lower() == "true"
         except subprocess.CalledProcessError:
             return False
+
+    def exec_in_container(
+        self,
+        challenge_id: str,
+        exploit_code: str,
+        timeout: int = 30,
+    ) -> tuple:
+        """在Docker容器内执行exploit代码。
+
+        将exploit代码复制到容器内并执行，捕获输出结果。
+
+        Args:
+            challenge_id: 题目唯一标识符
+            exploit_code: exploit的Python源代码
+            timeout: 执行超时时间（秒）
+
+        Returns:
+            tuple: (success: bool, output: str)
+        """
+        container = self._containers.get(challenge_id)
+        if not container:
+            return (False, "容器未找到")
+
+        import tempfile
+
+        tmp_file = None
+        try:
+            # 写入临时文件
+            tmp_file = tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False)
+            tmp_file.write(exploit_code)
+            tmp_file.close()
+
+            # 复制到容器内
+            subprocess.run(
+                [
+                    "docker",
+                    "cp",
+                    tmp_file.name,
+                    f"{container.container_id}:/tmp/exploit.py",
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+
+            # 在容器内执行
+            result = subprocess.run(
+                [
+                    "docker",
+                    "exec",
+                    container.container_id,
+                    "python3",
+                    "/tmp/exploit.py",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+
+            output = result.stdout + result.stderr
+            # 截断过长输出，保留尾部
+            if len(output) > 2000:
+                output = "...(truncated)...\n" + output[-2000:]
+
+            # 检查成功模式
+            from poma.config import config
+
+            success_patterns = config.get_success_patterns()
+            import re
+
+            success = any(re.search(p, output) for p in success_patterns)
+
+            return (success, output)
+
+        except subprocess.TimeoutExpired:
+            return (False, f"执行超时（{timeout}秒）")
+        except subprocess.CalledProcessError as e:
+            return (False, f"执行失败: {e.stderr or str(e)}")
+        except Exception as e:
+            return (False, f"未知错误: {str(e)}")
+        finally:
+            if tmp_file:
+                import os
+
+                try:
+                    os.unlink(tmp_file.name)
+                except OSError:
+                    pass

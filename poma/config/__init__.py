@@ -321,6 +321,17 @@ class ConfigLoader:
         """
         return self.get("output", {})
 
+    def get_prompt_template(self, prompt_key: str) -> Optional[str]:
+        """获取自定义prompt模板（从YAML配置加载）
+
+        Args:
+            prompt_key: prompt键名，如 "phase_0_system", "phase_1_user" 等
+
+        Returns:
+            Optional[str]: 自定义prompt字符串，未配置则返回None
+        """
+        return self.get(f"prompts.{prompt_key}", None)
+
     @property
     def config(self) -> Dict[str, Any]:
         """获取完整配置字典"""

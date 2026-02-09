@@ -9,6 +9,10 @@ from .templates import (
     PHASE_3_USER,
     PHASE_3_DEBUG_SYSTEM,
     PHASE_3_DEBUG_USER,
+    SCORING_SYSTEM,
+    SCORING_PHASE_0_USER,
+    SCORING_PHASE_1_USER,
+    SCORING_PHASE_2_USER,
 )
 
 __all__ = [
@@ -22,4 +26,8 @@ __all__ = [
     "PHASE_3_USER",
     "PHASE_3_DEBUG_SYSTEM",
     "PHASE_3_DEBUG_USER",
+    "SCORING_SYSTEM",
+    "SCORING_PHASE_0_USER",
+    "SCORING_PHASE_1_USER",
+    "SCORING_PHASE_2_USER",
 ]

@@ -43,6 +43,7 @@ llm:
 # -----------------------------------------------------------------------------
 evaluation:
   max_iterations: 10
+  parallel_workers: 1
   exploit_timeout: 30
   binary_info_timeout: 10
   docker_build_timeout: 300
@@ -401,6 +402,34 @@ hypothesis_validation:
     threshold: 10
     high_severity_threshold: 20
     description: "消融条件间成功率差异超过10%判定为瓶颈"
+
+# -----------------------------------------------------------------------------
+# Prompt Templates (可选覆盖，留空则使用templates.py中的默认值)
+# 支持从YAML加载自定义prompt，方便实验不同prompt策略
+# 每个prompt使用 | 多行字符串语法，保留换行符
+# 格式变量（如{binary_info}、{code}等）在运行时动态填充
+# -----------------------------------------------------------------------------
+# prompts:
+#   phase_0_system: |
+#     Your custom Phase 0 system prompt here...
+#   phase_0_user: |
+#     Your custom Phase 0 user prompt here...
+#   phase_1_system: |
+#     ...
+#   phase_1_user: |
+#     ...
+#   phase_2_system: |
+#     ...
+#   phase_2_user: |
+#     ...
+#   phase_3_system: |
+#     ...
+#   phase_3_user: |
+#     ...
+#   phase_3_debug_system: |
+#     ...
+#   phase_3_debug_user: |
+#     ...
 
 # -----------------------------------------------------------------------------
 # Output Settings

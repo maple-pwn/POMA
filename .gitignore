@@ -67,3 +67,6 @@ docker-compose.override.yml
 # OS
 .DS_Store
 Thumbs.db
+
+# AI-generated documentation (not tracked)
+AGENTS.md
