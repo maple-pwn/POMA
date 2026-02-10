@@ -54,16 +54,16 @@ class VulnerabilityType(Enum):
     """
 
     STACK_BUFFER_OVERFLOW = "stack_buffer_overflow"  # 栈缓冲区溢出
-    HEAP_OVERFLOW = "heap_overflow"                  # 堆溢出
-    FORMAT_STRING = "format_string"                  # 格式化字符串漏洞
-    USE_AFTER_FREE = "use_after_free"                # 释放后使用（UAF）
-    DOUBLE_FREE = "double_free"                      # 双重释放
-    INTEGER_OVERFLOW = "integer_overflow"             # 整数溢出
-    TYPE_CONFUSION = "type_confusion"                # 类型混淆
-    RACE_CONDITION = "race_condition"                 # 竞态条件
-    UNINITIALIZED_MEMORY = "uninitialized_memory"    # 未初始化内存
-    OUT_OF_BOUNDS = "out_of_bounds"                  # 越界访问
-    OTHER = "other"                                  # 其他类型
+    HEAP_OVERFLOW = "heap_overflow"  # 堆溢出
+    FORMAT_STRING = "format_string"  # 格式化字符串漏洞
+    USE_AFTER_FREE = "use_after_free"  # 释放后使用（UAF）
+    DOUBLE_FREE = "double_free"  # 双重释放
+    INTEGER_OVERFLOW = "integer_overflow"  # 整数溢出
+    TYPE_CONFUSION = "type_confusion"  # 类型混淆
+    RACE_CONDITION = "race_condition"  # 竞态条件
+    UNINITIALIZED_MEMORY = "uninitialized_memory"  # 未初始化内存
+    OUT_OF_BOUNDS = "out_of_bounds"  # 越界访问
+    OTHER = "other"  # 其他类型
 
 
 class ExploitTechnique(Enum):
@@ -77,32 +77,32 @@ class ExploitTechnique(Enum):
     """
 
     # 栈利用技术（Level 1-2）
-    RET2TEXT = "ret2text"              # 返回到程序已有函数（如后门函数）
-    RET2SHELLCODE = "ret2shellcode"    # 返回到注入的shellcode
-    RET2LIBC = "ret2libc"             # 返回到libc函数（如system）
-    ROP = "rop"                        # 返回导向编程（gadget链）
-    RET2CSU = "ret2csu"               # 利用__libc_csu_init的通用gadget
-    SROP = "srop"                      # 信号返回导向编程
-    STACK_PIVOT = "stack_pivot"        # 栈迁移（转移栈指针到可控区域）
+    RET2TEXT = "ret2text"  # 返回到程序已有函数（如后门函数）
+    RET2SHELLCODE = "ret2shellcode"  # 返回到注入的shellcode
+    RET2LIBC = "ret2libc"  # 返回到libc函数（如system）
+    ROP = "rop"  # 返回导向编程（gadget链）
+    RET2CSU = "ret2csu"  # 利用__libc_csu_init的通用gadget
+    SROP = "srop"  # 信号返回导向编程
+    STACK_PIVOT = "stack_pivot"  # 栈迁移（转移栈指针到可控区域）
 
     # 格式化字符串利用技术（Level 3）
-    GOT_OVERWRITE = "got_overwrite"    # GOT表覆写
+    GOT_OVERWRITE = "got_overwrite"  # GOT表覆写
 
     # 堆利用技术（Level 4-5）
-    TCACHE_POISONING = "tcache_poisoning"          # tcache投毒
-    FASTBIN_ATTACK = "fastbin_attack"              # fastbin攻击
-    UNSORTED_BIN_ATTACK = "unsorted_bin_attack"    # unsorted bin攻击
-    HOUSE_OF_FORCE = "house_of_force"              # House of Force
-    HOUSE_OF_SPIRIT = "house_of_spirit"            # House of Spirit
-    HOUSE_OF_LORE = "house_of_lore"                # House of Lore
-    HOUSE_OF_ORANGE = "house_of_orange"            # House of Orange
-    HOUSE_OF_EINHERJAR = "house_of_einherjar"      # House of Einherjar
-    LARGEBIN_ATTACK = "largebin_attack"            # large bin攻击
+    TCACHE_POISONING = "tcache_poisoning"  # tcache投毒
+    FASTBIN_ATTACK = "fastbin_attack"  # fastbin攻击
+    UNSORTED_BIN_ATTACK = "unsorted_bin_attack"  # unsorted bin攻击
+    HOUSE_OF_FORCE = "house_of_force"  # House of Force
+    HOUSE_OF_SPIRIT = "house_of_spirit"  # House of Spirit
+    HOUSE_OF_LORE = "house_of_lore"  # House of Lore
+    HOUSE_OF_ORANGE = "house_of_orange"  # House of Orange
+    HOUSE_OF_EINHERJAR = "house_of_einherjar"  # House of Einherjar
+    LARGEBIN_ATTACK = "largebin_attack"  # large bin攻击
 
     # 复杂利用技术（Level 6）
     IO_FILE_ATTACK = "io_file_attack"  # IO_FILE结构体攻击
     SANDBOX_ESCAPE = "sandbox_escape"  # 沙箱逃逸
-    OTHER = "other"                    # 其他技术
+    OTHER = "other"  # 其他技术
 
 
 class DifficultyLevel(Enum):
@@ -435,9 +435,7 @@ class Phase3NumericalScore:
 
     @property
     def total(self) -> int:
-        return (
-            self.offset_calculation + self.address_handling + self.byte_order_alignment
-        )
+        return self.offset_calculation + self.address_handling + self.byte_order_alignment
 
     @property
     def max_score(self) -> int:
@@ -454,11 +452,7 @@ class Phase3PayloadScore:
 
     @property
     def total(self) -> int:
-        return (
-            self.payload_structure
-            + self.technique_implementation
-            + self.boundary_handling
-        )
+        return self.payload_structure + self.technique_implementation + self.boundary_handling
 
     @property
     def max_score(self) -> int:
@@ -531,12 +525,7 @@ class EvaluationScores:
 
     @property
     def total(self) -> int:
-        return (
-            self.phase_0.total
-            + self.phase_1.total
-            + self.phase_2.total
-            + self.phase_3.total
-        )
+        return self.phase_0.total + self.phase_1.total + self.phase_2.total + self.phase_3.total
 
     @property
     def max_score(self) -> int:
@@ -615,6 +604,145 @@ class Challenge:
 
 
 @dataclass
+class ParsedPhase0Response:
+    """P0阶段（信息收集）结构化解析结果。"""
+
+    architecture: str = ""
+    protections: list[str] = field(default_factory=list)
+    program_functionality: str = ""
+    key_functions: list[str] = field(default_factory=list)
+    data_structures: list[str] = field(default_factory=list)
+    libc_version: str = ""
+    environment_notes: str = ""
+    raw_sections: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """序列化为字典。"""
+        return {
+            "architecture": self.architecture,
+            "protections": self.protections,
+            "program_functionality": self.program_functionality,
+            "key_functions": self.key_functions,
+            "data_structures": self.data_structures,
+            "libc_version": self.libc_version,
+            "environment_notes": self.environment_notes,
+            "raw_sections": self.raw_sections,
+        }
+
+
+@dataclass
+class ParsedPhase1Response:
+    """P1阶段（漏洞分析）结构化解析结果。"""
+
+    vulnerability_type: str = ""
+    vulnerability_location: str = ""
+    root_cause: str = ""
+    trigger_conditions: str = ""
+    additional_vulns: list[dict[str, str]] = field(default_factory=list)
+    raw_sections: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """序列化为字典。"""
+        return {
+            "vulnerability_type": self.vulnerability_type,
+            "vulnerability_location": self.vulnerability_location,
+            "root_cause": self.root_cause,
+            "trigger_conditions": self.trigger_conditions,
+            "additional_vulns": self.additional_vulns,
+            "raw_sections": self.raw_sections,
+        }
+
+
+@dataclass
+class ParsedPhase2Response:
+    """P2阶段（策略制定）结构化解析结果。"""
+
+    exploitation_primitives: list[str] = field(default_factory=list)
+    protection_bypass: dict[str, str] = field(default_factory=dict)
+    exploitation_path: list[str] = field(default_factory=list)
+    technique: str = ""
+    technique_justification: str = ""
+    raw_sections: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """序列化为字典。"""
+        return {
+            "exploitation_primitives": self.exploitation_primitives,
+            "protection_bypass": self.protection_bypass,
+            "exploitation_path": self.exploitation_path,
+            "technique": self.technique,
+            "technique_justification": self.technique_justification,
+            "raw_sections": self.raw_sections,
+        }
+
+
+@dataclass
+class ParsedPhase3Response:
+    """P3阶段（漏洞利用生成）结构化解析结果。"""
+
+    exploit_code: str = ""
+    key_offsets: dict[str, str] = field(default_factory=dict)
+    key_addresses: dict[str, str] = field(default_factory=dict)
+    payload_summary: str = ""
+    raw_sections: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """序列化为字典。"""
+        return {
+            "exploit_code": self.exploit_code,
+            "key_offsets": self.key_offsets,
+            "key_addresses": self.key_addresses,
+            "payload_summary": self.payload_summary,
+            "raw_sections": self.raw_sections,
+        }
+
+
+@dataclass
+class ParsedPhase3DebugResponse:
+    """P3调试迭代结构化解析结果。"""
+
+    error_diagnosis: str = ""
+    root_cause: str = ""
+    fix_description: str = ""
+    fixed_code: str = ""
+    raw_sections: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """序列化为字典。"""
+        return {
+            "error_diagnosis": self.error_diagnosis,
+            "root_cause": self.root_cause,
+            "fix_description": self.fix_description,
+            "fixed_code": self.fixed_code,
+            "raw_sections": self.raw_sections,
+        }
+
+
+@dataclass
+class ParsedResponse:
+    """LLM响应结构化解析结果的统一包装。"""
+
+    phase: str = ""
+    parsed: Any = None
+    parse_mode: str = ""  # "json" | "regex" | "none"
+    parse_success: bool = False
+    parse_errors: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        """序列化为字典。"""
+        parsed_dict = None
+        if self.parsed is not None and hasattr(self.parsed, "to_dict"):
+            parsed_dict = self.parsed.to_dict()
+        return {
+            "phase": self.phase,
+            "parsed": parsed_dict,
+            "parse_mode": self.parse_mode,
+            "parse_success": self.parse_success,
+            "parse_errors": self.parse_errors,
+        }
+
+
+@dataclass
 class PhaseResult:
     """Result of a single phase evaluation."""
 
@@ -628,21 +756,21 @@ class PhaseResult:
     latency_ms: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
+    parsed_response: Optional[ParsedResponse] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "phase": self.phase.value,
             "prompt": self.prompt,
             "response": self.response,
-            "score": self.score.to_dict()
-            if hasattr(self.score, "to_dict")
-            else self.score,
+            "score": self.score.to_dict() if hasattr(self.score, "to_dict") else self.score,
             "evaluator": self.evaluator,
             "notes": self.notes,
             "timestamp": self.timestamp.isoformat(),
             "latency_ms": self.latency_ms,
             "input_tokens": self.input_tokens,
             "output_tokens": self.output_tokens,
+            **({"parsed_response": self.parsed_response.to_dict()} if self.parsed_response else {}),
         }
 
 
@@ -656,6 +784,7 @@ class IterationRecord:
     error_type: Optional[str] = None
     diagnosis_accurate: bool = False
     fix_effective: bool = False
+    parsed_debug: Optional[ParsedPhase3DebugResponse] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -665,6 +794,7 @@ class IterationRecord:
             "error_type": self.error_type,
             "diagnosis_accurate": self.diagnosis_accurate,
             "fix_effective": self.fix_effective,
+            **({"parsed_debug": self.parsed_debug.to_dict()} if self.parsed_debug else {}),
         }
 
 
@@ -744,6 +874,7 @@ class ExperimentConfig:
     parallel_workers: int = 1
     output_dir: str = "results"
     num_runs: int = 1
+    structured_output: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -756,4 +887,5 @@ class ExperimentConfig:
             "parallel_workers": self.parallel_workers,
             "output_dir": self.output_dir,
             "num_runs": self.num_runs,
+            "structured_output": self.structured_output,
         }

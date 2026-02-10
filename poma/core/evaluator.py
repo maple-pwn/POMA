@@ -73,6 +73,8 @@ from poma.prompts.templates import (
     SCORING_PHASE_2_USER,
 )
 from poma.config import config
+from poma.parsing import ResponseParser
+from poma.prompts.templates import get_phase_template
 
 
 class PhaseEvaluator:
@@ -87,6 +89,7 @@ class PhaseEvaluator:
         working_dir: Optional[Path] = None,
         docker_orchestrator: Optional["DockerOrchestrator"] = None,
         container_id: Optional[str] = None,
+        structured_output: bool = False,
     ):
         self.llm = llm_provider
         self.challenge = challenge
@@ -94,6 +97,8 @@ class PhaseEvaluator:
         self.max_iterations = max_iterations
         self.docker_orchestrator = docker_orchestrator
         self.container_id = container_id
+        self.structured_output = structured_output
+        self.parser = ResponseParser(structured_output=structured_output)
         self.working_dir = working_dir or Path(tempfile.mkdtemp())
         self._prepare_working_dir()
 
@@ -207,7 +212,7 @@ class PhaseEvaluator:
         # 构建评分请求
         user_prompt = user_template.format(
             ground_truth=ground_truth_text,
-            llm_output=llm_output,
+            model_output=llm_output,
         )
 
         try:
@@ -250,11 +255,28 @@ class PhaseEvaluator:
                 ),
             )
 
-        # 构造prompt：二进制信息 + 反编译代码
-        prompt = PHASE_0_USER.format(binary_info=self._get_binary_info(), code=self._load_code())
+        # 构造prompt：根据structured_output选择模板
+        if self.structured_output:
+            system_prompt, user_template = get_phase_template(
+                "phase_0",
+                structured=True,
+            )
+            prompt = user_template.format(
+                binary_info=self._get_binary_info(),
+                code=self._load_code(),
+            )
+        else:
+            prompt = PHASE_0_USER.format(
+                binary_info=self._get_binary_info(),
+                code=self._load_code(),
+            )
+            system_prompt = PHASE_0_SYSTEM
 
         # 调用LLM进行信息收集
-        response = self.llm.complete(prompt, system_prompt=PHASE_0_SYSTEM)
+        response = self.llm.complete(prompt, system_prompt=system_prompt)
+
+        # 解析LLM响应
+        parsed_response = self.parser.parse("phase_0", response.content)
 
         # 使用LLM-as-judge自动评分（需要Ground Truth）
         if self.ground_truth:
@@ -280,6 +302,7 @@ class PhaseEvaluator:
             latency_ms=response.latency_ms,
             input_tokens=response.input_tokens,
             output_tokens=response.output_tokens,
+            parsed_response=parsed_response,
         )
 
     def run_phase_1(
@@ -300,14 +323,31 @@ class PhaseEvaluator:
                 ),
             )
 
-        # 构造prompt：Phase 0输出 + 代码
-        prompt = PHASE_1_USER.format(phase_0_output=phase_0_result.response, code=self._load_code())
+        # 构造prompt：根据structured_output选择模板
+        if self.structured_output:
+            system_prompt, user_template = get_phase_template(
+                "phase_1",
+                structured=True,
+            )
+            prompt = user_template.format(
+                phase_0_output=phase_0_result.response,
+                code=self._load_code(),
+            )
+        else:
+            prompt = PHASE_1_USER.format(
+                phase_0_output=phase_0_result.response,
+                code=self._load_code(),
+            )
+            system_prompt = PHASE_1_SYSTEM
 
         # 调用LLM进行漏洞分析
-        response = self.llm.complete(prompt, system_prompt=PHASE_1_SYSTEM)
+        response = self.llm.complete(prompt, system_prompt=system_prompt)
 
-        # 检测是否越界讨论利用策略（Phase 1应该只分析漏洞，不讨论利用）
+        # 检测是否越界讨论利用策略（基于原始响应文本）
         boundary_violation = self._check_boundary_violation(response.content)
+
+        # 解析LLM响应
+        parsed_response = self.parser.parse("phase_1", response.content)
 
         if self.ground_truth:
             scores = self._score_with_llm(
@@ -333,6 +373,7 @@ class PhaseEvaluator:
             latency_ms=response.latency_ms,
             input_tokens=response.input_tokens,
             output_tokens=response.output_tokens,
+            parsed_response=parsed_response,
         )
 
     def _check_boundary_violation(self, response: str) -> bool:
@@ -396,16 +437,30 @@ class PhaseEvaluator:
             architecture = "unknown"
             protections = "unknown"
 
-        # 构造prompt：Phase 1输出 + 架构信息 + 保护机制 + libc版本
-        prompt = PHASE_2_USER.format(
-            phase_1_output=phase_1_result.response,
-            architecture=architecture,
-            protections=protections,
-            libc_version=self.challenge.libc_version or "unknown",
-        )
+        # 构造prompt：根据structured_output选择模板
+        if self.structured_output:
+            system_prompt, user_template = get_phase_template(
+                "phase_2",
+                structured=True,
+            )
+            prompt = user_template.format(
+                phase_1_output=phase_1_result.response,
+                architecture=architecture,
+                protections=protections,
+                libc_version=self.challenge.libc_version or "unknown",
+            )
+        else:
+            prompt = PHASE_2_USER.format(
+                phase_1_output=phase_1_result.response,
+                architecture=architecture,
+                protections=protections,
+                libc_version=self.challenge.libc_version or "unknown",
+            )
+            system_prompt = PHASE_2_SYSTEM
 
-        # 调用LLM进行策略规划
-        response = self.llm.complete(prompt, system_prompt=PHASE_2_SYSTEM)
+        response = self.llm.complete(prompt, system_prompt=system_prompt)
+
+        parsed_response = self.parser.parse("phase_2", response.content)
 
         # LLM-as-judge评分：当有GT时自动评分
         if self.ground_truth:
@@ -434,6 +489,7 @@ class PhaseEvaluator:
             latency_ms=response.latency_ms,
             input_tokens=response.input_tokens,
             output_tokens=response.output_tokens,
+            parsed_response=parsed_response,
         )
 
     def run_phase_3(
@@ -483,6 +539,8 @@ Payload Structure: {gt.payload_structure}
             response = self.llm.complete(prompt, system_prompt=PHASE_3_SYSTEM)
             exploit_code = self._extract_code(response.content)
 
+        parsed_response = self.parser.parse("phase_3", exploit_code)
+
         # 迭代调试循环
         iterations: List[IterationRecord] = []
         final_success = False
@@ -514,19 +572,42 @@ Payload Structure: {gt.payload_structure}
             iteration_record.error_type = error_type
             iterations.append(iteration_record)
 
-            # 构造debug prompt让LLM诊断和修复
-            debug_prompt = PHASE_3_DEBUG_USER.format(
-                exploit_code=exploit_code,
-                execution_output=output,
-                iteration=iteration,
-                max_iterations=self.max_iterations,
+            if self.structured_output:
+                debug_system, debug_user_template = get_phase_template(
+                    "phase_3_debug",
+                    structured=True,
+                )
+                debug_prompt = debug_user_template.format(
+                    exploit_code=exploit_code,
+                    execution_output=output,
+                    iteration=iteration,
+                    max_iterations=self.max_iterations,
+                )
+            else:
+                debug_prompt = PHASE_3_DEBUG_USER.format(
+                    exploit_code=exploit_code,
+                    execution_output=output,
+                    iteration=iteration,
+                    max_iterations=self.max_iterations,
+                )
+                debug_system = PHASE_3_DEBUG_SYSTEM
+
+            debug_response = self.llm.complete(
+                debug_prompt,
+                system_prompt=debug_system,
             )
 
-            debug_response = self.llm.complete(debug_prompt, system_prompt=PHASE_3_DEBUG_SYSTEM)
+            parsed_debug = self.parser.parse(
+                "phase_3_debug",
+                debug_response.content,
+            )
 
             # 检测诊断准确性
             diagnosis_accurate = self._check_diagnosis_accuracy(debug_response.content, error_type)
             iteration_record.diagnosis_accurate = diagnosis_accurate
+            iteration_record.parsed_debug = (
+                parsed_debug.parsed if parsed_debug.parse_success else None
+            )
 
             # 提取修复后的代码
             new_code = self._extract_code(debug_response.content)
@@ -547,6 +628,7 @@ Payload Structure: {gt.payload_structure}
                 final_success=final_success,
                 convergence_pattern=self._analyze_convergence(iterations),
             ),
+            parsed_response=parsed_response,
         )
 
         return phase_result, iterations
@@ -768,14 +850,47 @@ class ExperimentRunner:
         ground_truths: Dict[str, ChallengeGroundTruth],
         max_iterations: int = 10,
         output_dir: Path = Path("results"),
+        structured_output: bool = False,
     ):
         self.llm = llm_provider
         self.challenges = challenges
         self.ground_truths = ground_truths
         self.max_iterations = max_iterations
         self.output_dir = output_dir
+        self.structured_output = structured_output
         # 确保输出目录存在
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
+    def _render_parsed_summary(self, phase_result: PhaseResult) -> list[str]:
+        """渲染解析结果摘要表格。"""
+        lines: list[str] = []
+        pr = phase_result.parsed_response
+        if pr is None or not pr.parse_success:
+            return lines
+        lines.append("")
+        lines.append("#### 结构化解析结果")
+        lines.append(f"- 解析模式: {pr.parse_mode}")
+        parsed = pr.parsed
+        if parsed is None:
+            return lines
+        lines.append("")
+        lines.append("| 字段 | 值 |")
+        lines.append("|------|-----|")
+        d = parsed.to_dict() if hasattr(parsed, "to_dict") else {}
+        for key, value in d.items():
+            if key == "raw_sections":
+                continue
+            if isinstance(value, list):
+                val_str = ", ".join(str(v) for v in value) if value else "(空)"
+            elif isinstance(value, dict):
+                val_str = "; ".join(f"{k}={v}" for k, v in value.items()) if value else "(空)"
+            else:
+                val_str = str(value) if value else "(空)"
+            if len(val_str) > 100:
+                val_str = val_str[:97] + "..."
+            val_str = val_str.replace("|", "\\|")
+            lines.append(f"| {key} | {val_str} |")
+        return lines
 
     def _generate_markdown_report(self, result: ExperimentResult) -> str:
         """生成实验结果的Markdown格式报告，便于人工审阅
@@ -889,6 +1004,8 @@ class ExperimentRunner:
             )
             lines.append("")
 
+            lines.extend(self._render_parsed_summary(phase_result))
+
             lines.append(f"### ⏱️ 性能指标")
             lines.append("")
             lines.append(f"- **延迟**: {phase_result.latency_ms}ms")
@@ -992,6 +1109,7 @@ class ExperimentRunner:
             challenge=challenge,
             ground_truth=ground_truth,
             max_iterations=self.max_iterations,
+            structured_output=self.structured_output,
         )
 
         result = ExperimentResult(

@@ -48,6 +48,8 @@ evaluation:
   binary_info_timeout: 10
   docker_build_timeout: 300
   docker_stop_timeout: 30
+  # 结构化输出模式：启用后LLM将以JSON格式输出，便于自动解析和人工审查
+  structured_output: false
 
 # -----------------------------------------------------------------------------
 # Scoring Configuration
