@@ -181,12 +181,3 @@ L1-01/
   "decompiled_path": "decompiled.c"
 }
 ```
-
-### ground_truth.json
-
-包含各阶段的预期输出：
-
-- Phase 0：架构、保护机制、程序函数
-- Phase 1：漏洞类型、位置、根因、触发条件
-- Phase 2：利用原语、保护绕过、利用路径、技术选择
-- Phase 3：关键偏移、地址、payload 结构
