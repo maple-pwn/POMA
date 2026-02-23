@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L6-04",
+  "name": "PlaidCTF 2015 plaiddb",
+  "level": 6,
+  "vulnerability_types": [
+    "other"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "PlaidCTF 2015",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "复杂数据库程序, 需逆向理解逻辑后发现并组合多个漏洞利用",
+  "hints": [],
+  "tags": [
+    "复杂组合"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L2-07",
+  "name": "AXB CTF 2019 brop64",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "rop"
+  ],
+  "source": "AXB CTF 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "Blind ROP: 远程爆破canary/返回地址, 逐步泄露信息",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}

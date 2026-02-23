@@ -1,0 +1,22 @@
+{
+  "challenge_id": "L6-07",
+  "name": "DEF CON Quals 2019 babyheap",
+  "level": 6,
+  "vulnerability_types": [
+    "other"
+  ],
+  "exploit_techniques": [
+    "io_file_attack",
+    "sandbox_escape"
+  ],
+  "source": "DEF CON Quals 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.29 (Ubuntu 19.04)",
+  "description": "高难度堆题, 需要House系列技术配合IO_FILE和seccomp绕过",
+  "hints": [],
+  "tags": [
+    "复杂组合"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "challenge_id": "L1-07",
+  "name": "3DSCTF 2016 not_the_same",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2libc",
+    "rop"
+  ],
+  "source": "3DSCTF 2016",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "静态链接 (无libc依赖)",
+  "description": "静态链接程序, 利用mprotect修改内存权限或直接ROP",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

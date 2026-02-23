@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L2-09",
+  "name": "ASIS CTF 2016 r2t4",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "ASIS CTF 2016",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "Fork模式下逐字节爆破Canary, 再进行ROP",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}

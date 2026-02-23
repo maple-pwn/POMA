@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-06",
+  "name": "ROARCTF 2019 easy_pwn",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "ROARCTF 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "off-by-one修改next chunk size, 堆块重叠后泄露和劫持",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

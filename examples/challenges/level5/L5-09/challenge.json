@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L5-09",
+  "name": "HITCON 2016 sleepyHolder",
+  "level": 5,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "fastbin_attack"
+  ],
+  "source": "HITCON 2016",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "结合fastbin attack和unlink的高级堆利用, 需要精细的堆布局",
+  "hints": [],
+  "tags": [
+    "高级堆利用"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L3-08",
+  "name": "HITCON Training playfmt",
+  "level": 3,
+  "vulnerability_types": [
+    "format_string"
+  ],
+  "exploit_techniques": [
+    "got_overwrite"
+  ],
+  "source": "HITCON Training",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "libc-2.23",
+  "description": "HITCON Training Lab 9, 格式化字符串位于堆上(非栈上), 需通过栈上指针链实现任意地址写, 劫持GOT表获取shell",
+  "hints": [],
+  "tags": [
+    "格式化字符串"
+  ]
+}

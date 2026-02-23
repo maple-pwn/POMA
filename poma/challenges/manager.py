@@ -18,9 +18,9 @@
 import json
 import subprocess
 import time
-from pathlib import Path
-from typing import Optional, Dict, List, Any
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Optional
 
 from poma.schemas.models import (
     Challenge,
@@ -377,6 +377,31 @@ class DockerOrchestrator:
         self._port_counter += 1
         return port
 
+    def _get_challenge_internal_port(self, challenge: Challenge) -> int:
+        if not challenge.dockerfile_path:
+            return self.internal_port
+
+        dockerfile_path = Path(challenge.dockerfile_path)
+        if not dockerfile_path.exists():
+            return self.internal_port
+
+        try:
+            for line in dockerfile_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+                text = line.strip()
+                if not text or text.startswith("#"):
+                    continue
+
+                if text.upper().startswith("EXPOSE"):
+                    parts = text.split()[1:]
+                    for part in parts:
+                        port_text = part.split("/", 1)[0]
+                        if port_text.isdigit():
+                            return int(port_text)
+        except OSError:
+            return self.internal_port
+
+        return self.internal_port
+
     def start_challenge(self, challenge: Challenge) -> Optional[DockerContainer]:
         """
         构建Docker镜像并启动容器，返回DockerContainer对象（失败返回None）
@@ -429,6 +454,7 @@ class DockerOrchestrator:
             return None
 
         port = self._get_next_port()
+        internal_port = self._get_challenge_internal_port(challenge)
 
         try:
             result = subprocess.run(
@@ -437,7 +463,7 @@ class DockerOrchestrator:
                     "run",
                     "-d",
                     "-p",
-                    f"{port}:{self.internal_port}",
+                    f"{port}:{internal_port}",
                     "--name",
                     f"{self.image_prefix}-{challenge.challenge_id}-{port}",
                     image_name,

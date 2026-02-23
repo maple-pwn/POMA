@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L5-05",
+  "name": "picoCTF 2024 high_frequency_troubles",
+  "level": 5,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "house_of_orange"
+  ],
+  "source": "picoCTF 2024",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.35 (Ubuntu 22.04)",
+  "description": "现代glibc下的House of Orange利用, 需要适配新版本保护",
+  "hints": [],
+  "tags": [
+    "高级堆利用"
+  ]
+}

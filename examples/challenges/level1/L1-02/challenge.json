@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L1-02",
+  "name": "CSAW CTF 2016 warmup",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2text"
+  ],
+  "source": "CSAW CTF 2016",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "简单栈溢出覆盖返回地址, 程序直接给出后门地址",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

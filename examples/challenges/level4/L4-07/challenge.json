@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-07",
+  "name": "HITCON 2014 stkof",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "got_overwrite"
+  ],
+  "source": "HITCON 2014",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "经典unlink题目, 伪造FD/BK指针绕过检查实现GOT覆写",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

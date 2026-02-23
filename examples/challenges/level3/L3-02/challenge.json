@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L3-02",
+  "name": "picoCTF 2024 Format String 2",
+  "level": 3,
+  "vulnerability_types": [
+    "format_string"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "picoCTF 2024",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.35 (Ubuntu 22.04)",
+  "description": "利用%n写入修改全局变量, 改变程序执行流程",
+  "hints": [],
+  "tags": [
+    "格式化字符串"
+  ]
+}

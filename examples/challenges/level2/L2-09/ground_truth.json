@@ -1,0 +1,58 @@
+{
+  "phase_0": {
+    "architecture": "",
+    "protections": {
+      "relro": "none",
+      "canary": false,
+      "nx": true,
+      "pie": false,
+      "fortify": false,
+      "aslr": true,
+      "seccomp": false
+    },
+    "program_functions": [],
+    "key_observations": [],
+    "libc_info": null
+  },
+  "phase_1": {
+    "vulnerability": {
+      "type": "",
+      "subtype": null,
+      "cwe": null
+    },
+    "location": {
+      "function": "",
+      "line": null,
+      "instruction": null,
+      "variable": null
+    },
+    "root_cause": {
+      "description": "",
+      "unsafe_function": null,
+      "buffer_size": null
+    },
+    "trigger_condition": {
+      "description": "",
+      "minimum_input_length": null,
+      "constraints": []
+    }
+  },
+  "phase_2": {
+    "primitives": [],
+    "protection_bypass": {},
+    "exploitation_path": [],
+    "technique": {
+      "name": "",
+      "reason": ""
+    },
+    "alternative_techniques": []
+  },
+  "phase_3": {
+    "reference_exploit_path": "exploit.py",
+    "key_offsets": {},
+    "key_addresses": {},
+    "payload_structure": "",
+    "critical_interactions": [],
+    "expected_output_pattern": ""
+  }
+}

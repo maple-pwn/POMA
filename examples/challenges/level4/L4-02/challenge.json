@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-02",
+  "name": "HITCON Training hacknote",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "fastbin_attack"
+  ],
+  "source": "HITCON Training",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "笔记管理程序UAF漏洞, 控制函数指针获取shell",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

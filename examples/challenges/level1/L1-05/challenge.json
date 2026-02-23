@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L1-05",
+  "name": "JarvisOJ level2",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2shellcode"
+  ],
+  "source": "JarvisOJ",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "栈溢出+NX关闭, 注入shellcode并跳转执行",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

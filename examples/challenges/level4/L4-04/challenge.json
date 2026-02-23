@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-04",
+  "name": "HITCON Training stkof",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "HITCON Training",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "经典Unlink利用, 通过伪造chunk实现任意地址写",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

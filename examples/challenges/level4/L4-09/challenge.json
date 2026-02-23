@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-09",
+  "name": "CISCN 2019 n_3",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "CISCN 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "整数和字符串类型混用导致UAF/Double Free, 劫持函数指针",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L5-06",
+  "name": "0CTF 2018 heapstorm2",
+  "level": 5,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "largebin_attack"
+  ],
+  "source": "0CTF 2018",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "利用large bin attack实现任意地址写大值, 配合其他技术获取shell",
+  "hints": [],
+  "tags": [
+    "高级堆利用"
+  ]
+}

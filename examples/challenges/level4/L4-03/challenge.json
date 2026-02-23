@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-03",
+  "name": "HITCON Training heapcreator",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "HITCON Training",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "堆上off-by-one溢出修改下一chunk的size, 造成堆块重叠",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

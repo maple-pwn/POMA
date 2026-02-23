@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L6-06",
+  "name": "Google CTF 2019 Secure Boot",
+  "level": 6,
+  "vulnerability_types": [
+    "other"
+  ],
+  "exploit_techniques": [
+    "rop"
+  ],
+  "source": "Google CTF 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "N/A (Firmware)",
+  "description": "Google CTF 2019 Quals (271pts), UEFI Secure Boot固件利用题, 需逆向自定义bootloader, 找到密码验证缓冲区溢出漏洞, 在固件环境中构造ROP链获取flag",
+  "hints": [],
+  "tags": [
+    "复杂组合"
+  ]
+}

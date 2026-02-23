@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L2-04",
+  "name": "BJDCTF 2020 babyrop2",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "BJDCTF 2020",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "利用格式化字符串泄露canary值, 再进行栈溢出",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}

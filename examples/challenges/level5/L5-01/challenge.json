@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L5-01",
+  "name": "HITCON CTF 2018 children_tcache",
+  "level": 5,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "tcache_poisoning"
+  ],
+  "source": "HITCON CTF 2018",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "Tcache+null字节溢出, 堆块收缩造成重叠, 劫持tcache链",
+  "hints": [],
+  "tags": [
+    "高级堆利用"
+  ]
+}

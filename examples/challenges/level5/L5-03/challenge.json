@@ -1,0 +1,22 @@
+{
+  "challenge_id": "L5-03",
+  "name": "HITCON CTF 2019 one_punch",
+  "level": 5,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "tcache_poisoning",
+    "house_of_lore"
+  ],
+  "source": "HITCON CTF 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.29 (Ubuntu 19.04)",
+  "description": "利用tcache stashing unlink攻击在任意地址分配chunk",
+  "hints": [],
+  "tags": [
+    "高级堆利用"
+  ]
+}

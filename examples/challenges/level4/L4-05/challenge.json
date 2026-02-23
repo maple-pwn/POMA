@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-05",
+  "name": "0CTF 2017 babyheap",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "fastbin_attack"
+  ],
+  "source": "0CTF 2017",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "堆溢出扩展chunk造成重叠, unsortedbin泄露libc, fastbin attack写malloc_hook",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

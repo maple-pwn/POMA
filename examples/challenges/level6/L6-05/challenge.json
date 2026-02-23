@@ -1,0 +1,23 @@
+{
+  "challenge_id": "L6-05",
+  "name": "0CTF 2019 babyheap",
+  "level": 6,
+  "vulnerability_types": [
+    "other"
+  ],
+  "exploit_techniques": [
+    "house_of_lore",
+    "io_file_attack",
+    "sandbox_escape"
+  ],
+  "source": "0CTF 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.29 (Ubuntu 19.04)",
+  "description": "在沙箱环境下利用堆漏洞, 需要绕过seccomp构造ORW链",
+  "hints": [],
+  "tags": [
+    "复杂组合"
+  ]
+}

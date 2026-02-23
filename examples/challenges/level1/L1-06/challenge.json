@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L1-06",
+  "name": "CISCN 2019 c_1",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2libc"
+  ],
+  "source": "CISCN 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "加密程序栈溢出, 利用puts泄露libc地址后ret2libc",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

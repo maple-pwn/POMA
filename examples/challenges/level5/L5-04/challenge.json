@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L5-04",
+  "name": "HITCON Training house_of_orange",
+  "level": 5,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "house_of_orange"
+  ],
+  "source": "HITCON Training",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "无free函数, 通过修改top chunk size触发sysmalloc放入unsorted bin, 伪造IO_FILE_plus",
+  "hints": [],
+  "tags": [
+    "高级堆利用"
+  ]
+}

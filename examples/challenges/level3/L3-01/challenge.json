@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L3-01",
+  "name": "picoCTF 2024 Format String 1",
+  "level": 3,
+  "vulnerability_types": [
+    "format_string"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "picoCTF 2024",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.35 (Ubuntu 22.04)",
+  "description": "基础格式化字符串漏洞, 利用%p泄露栈上数据获取flag",
+  "hints": [],
+  "tags": [
+    "格式化字符串"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L2-02",
+  "name": "GYCTF 2020 borrowstack",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "stack_pivot"
+  ],
+  "source": "GYCTF 2020",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "溢出字节有限, 通过栈迁移将栈劫持到bss段",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}

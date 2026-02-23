@@ -1,0 +1,23 @@
+{
+  "challenge_id": "L6-03",
+  "name": "HITCON CTF 2018 baby_tcache",
+  "level": 6,
+  "vulnerability_types": [
+    "other"
+  ],
+  "exploit_techniques": [
+    "tcache_poisoning",
+    "io_file_attack",
+    "sandbox_escape"
+  ],
+  "source": "HITCON CTF 2018",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "Tcache poisoning劫持IO_FILE_vtable, 绕过vtable检查执行任意代码",
+  "hints": [],
+  "tags": [
+    "复杂组合"
+  ]
+}

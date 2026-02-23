@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L2-06",
+  "name": "ROP Emporium ret2csu",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2csu"
+  ],
+  "source": "ROP Emporium",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "利用__libc_csu_init中的通用gadget控制rdi/rsi/rdx寄存器",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}

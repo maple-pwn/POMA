@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L5-02",
+  "name": "LCTF 2018 easy_heap",
+  "level": 5,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "tcache_poisoning"
+  ],
+  "source": "LCTF 2018",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "利用tcache double free和tcache poisoning控制分配, 劫持free_hook",
+  "hints": [],
+  "tags": [
+    "高级堆利用"
+  ]
+}

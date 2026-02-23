@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L1-03",
+  "name": "CISCN 2019 n_1",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2text"
+  ],
+  "source": "CISCN 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "栈溢出覆盖局部变量(浮点数比较), 或直接ret2text",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

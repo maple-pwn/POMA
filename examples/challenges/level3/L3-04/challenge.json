@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L3-04",
+  "name": "MMA 2nd CTF 2016 greeting",
+  "level": 3,
+  "vulnerability_types": [
+    "format_string"
+  ],
+  "exploit_techniques": [
+    "got_overwrite"
+  ],
+  "source": "MMA 2nd CTF 2016",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "格式化字符串覆写.fini_array和GOT实现循环利用",
+  "hints": [],
+  "tags": [
+    "格式化字符串"
+  ]
+}

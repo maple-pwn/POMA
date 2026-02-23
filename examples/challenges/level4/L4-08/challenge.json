@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-08",
+  "name": "HITCON Training magicheap",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "unsorted_bin_attack"
+  ],
+  "source": "HITCON Training",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "利用unsorted bin attack修改magic变量获取flag",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

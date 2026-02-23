@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L1-09",
+  "name": "BUUCTF others_shellcode",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2shellcode"
+  ],
+  "source": "BUUCTF",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "直接读入并执行shellcode的最基础题目",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

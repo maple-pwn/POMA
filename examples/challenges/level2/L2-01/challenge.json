@@ -1,0 +1,22 @@
+{
+  "challenge_id": "L2-01",
+  "name": "CISCN 2019 s_3",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "srop",
+    "rop"
+  ],
+  "source": "CISCN 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "利用syscall和sigreturn frame构造SROP攻击获取shell",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}

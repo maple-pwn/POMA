@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L6-02",
+  "name": "StarCTF 2019 babyshell",
+  "level": 6,
+  "vulnerability_types": [
+    "other"
+  ],
+  "exploit_techniques": [
+    "sandbox_escape"
+  ],
+  "source": "StarCTF 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "在seccomp沙箱限制下构造ORW(open/read/write)读取flag",
+  "hints": [],
+  "tags": [
+    "复杂组合"
+  ]
+}

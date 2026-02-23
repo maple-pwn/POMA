@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L4-01",
+  "name": "HITCON Training UAF",
+  "level": 4,
+  "vulnerability_types": [
+    "heap_overflow"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "HITCON Training",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "经典UAF入门题, free后未置空指针, 重新分配劫持函数指针",
+  "hints": [],
+  "tags": [
+    "基础堆利用"
+  ]
+}

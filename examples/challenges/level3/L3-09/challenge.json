@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L3-09",
+  "name": "X-MAN 2019 format",
+  "level": 3,
+  "vulnerability_types": [
+    "format_string"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "X-MAN 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "输入存储在堆上, 利用栈上已有指针链构造任意写",
+  "hints": [],
+  "tags": [
+    "格式化字符串"
+  ]
+}

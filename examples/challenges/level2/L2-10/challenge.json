@@ -1,0 +1,22 @@
+{
+  "challenge_id": "L2-10",
+  "name": "ROP Emporium srop",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "srop",
+    "rop"
+  ],
+  "source": "ROP Emporium",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "专项练习SROP技术, 利用sigreturn系统调用控制所有寄存器",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}

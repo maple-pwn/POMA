@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L3-06",
+  "name": "AXB CTF 2019 fmt32",
+  "level": 3,
+  "vulnerability_types": [
+    "format_string"
+  ],
+  "exploit_techniques": [
+    "got_overwrite"
+  ],
+  "source": "AXB CTF 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "32位格式化字符串漏洞, 配合栈上地址实现GOT覆写",
+  "hints": [],
+  "tags": [
+    "格式化字符串"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L2-03",
+  "name": "CISCN 2019 es_2",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "stack_pivot"
+  ],
+  "source": "CISCN 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "仅能溢出少量字节, 需要栈迁移配合ROP",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}

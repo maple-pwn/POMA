@@ -1,0 +1,22 @@
+{
+  "challenge_id": "L6-01",
+  "name": "SCTF 2019 one_heap",
+  "level": 6,
+  "vulnerability_types": [
+    "other"
+  ],
+  "exploit_techniques": [
+    "tcache_poisoning",
+    "io_file_attack"
+  ],
+  "source": "SCTF 2019",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.27 (Ubuntu 18.04)",
+  "description": "仅有alloc和free, 利用tcache attack伪造IO_FILE结构实现FSOP",
+  "hints": [],
+  "tags": [
+    "复杂组合"
+  ]
+}

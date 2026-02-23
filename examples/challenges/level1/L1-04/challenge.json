@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L1-04",
+  "name": "SCTF 2016 pwn1",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2text"
+  ],
+  "source": "SCTF 2016",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "输入I会被替换为you导致缓冲区溢出, ret2text",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L1-08",
+  "name": "JarvisOJ level2_x64",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "rop"
+  ],
+  "source": "JarvisOJ",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "64位程序基础ROP, 利用gadget传参调用system(\"/bin/sh\")",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

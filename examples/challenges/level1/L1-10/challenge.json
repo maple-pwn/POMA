@@ -1,0 +1,22 @@
+{
+  "challenge_id": "L1-10",
+  "name": "BJDCTF 2020 babyrop",
+  "level": 1,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "ret2libc",
+    "rop"
+  ],
+  "source": "BJDCTF 2020",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "泄露puts地址获取libc基址, 构造ROP链调用system",
+  "hints": [],
+  "tags": [
+    "基础栈溢出"
+  ]
+}

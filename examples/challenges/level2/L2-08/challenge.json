@@ -1,0 +1,21 @@
+{
+  "challenge_id": "L2-08",
+  "name": "Hackover 2016 ez_pz",
+  "level": 2,
+  "vulnerability_types": [
+    "stack_buffer_overflow"
+  ],
+  "exploit_techniques": [
+    "other"
+  ],
+  "source": "Hackover CTF 2016",
+  "binary_path": "challenge",
+  "decompiled_path": "decompiled.c",
+  "dockerfile_path": "Dockerfile",
+  "libc_version": "glibc 2.23 (Ubuntu 16.04)",
+  "description": "PIE开启但可通过部分覆写低字节绕过地址随机化",
+  "hints": [],
+  "tags": [
+    "栈溢出进阶"
+  ]
+}
